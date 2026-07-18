@@ -1,0 +1,113 @@
+@using ComplainManagementSystem.Models
+@{
+    ViewData["Title"] = "Complaint Details";
+    var complaint = (Complaint)ViewBag.Complaint;
+    var role = (string)ViewBag.Role;
+}
+
+@functions {
+    string GetCategory(int id) => id switch {
+        1 => "Academic Affairs",
+        2 => "Lab & IT Facilities",
+        3 => "Hostel & Housing",
+        4 => "Transport & Parking",
+        5 => "Cafeteria & Food Services",
+        _ => "Unknown"
+    };
+    string GetBadgeClass(string status) => status switch {
+        "pending"  => "badge badge-pending",
+        "progress" => "badge badge-progress",
+        "resolved" => "badge badge-resolved",
+        _          => "badge"
+    };
+    string GetStatusLabel(string status) => status switch {
+        "pending"  => "Pending",
+        "progress" => "In Progress",
+        "resolved" => "Resolved",
+        _          => status
+    };
+}
+
+<div class="form-wrapper">
+    <div class="form-card details-card">
+        <div class="details-header">
+            <div class="details-header-top">
+                <h2 class="m-0">Complaint #CMP-@complaint.Id</h2>
+                <span class="@GetBadgeClass(complaint.Status)">@GetStatusLabel(complaint.Status)</span>
+            </div>
+            <p class="text-muted m-0">Submitted on @complaint.SubmittedDate.ToString("MMMM dd, yyyy")</p>
+        </div>
+
+        <div class="details-body">
+            <div class="details-section">
+                <h4>Subject</h4>
+                <p>@complaint.Subject</p>
+            </div>
+
+            <div class="form-row">
+                <div class="details-section flex-1">
+                    <h4>Category</h4>
+                    <p>@GetCategory(complaint.CategoryId)</p>
+                </div>
+                <div class="details-section flex-1">
+                    <h4>Submitted By</h4>
+                    <p>@complaint.User?.FirstName @complaint.User?.LastName (@complaint.User?.Email)</p>
+                </div>
+            </div>
+
+            <div class="details-section">
+                <h4>Description</h4>
+                <p>@complaint.Description</p>
+            </div>
+
+            @if (!string.IsNullOrEmpty(complaint.AdminComments))
+            {
+                <div class="details-section" style="background:#f0fdf4; border-left: 3px solid #22c55e; padding-left:1rem;">
+                    <h4>Official Notes</h4>
+                    <p>@complaint.AdminComments</p>
+                </div>
+            }
+        </div>
+        @if (role == "admin" || role == "auditor")
+        {
+            <div class="details-actions">
+                <h4>Update Complaint</h4>
+                <form asp-controller="Home" asp-action="UpdateStatus" method="post">
+                    <input type="hidden" name="id" value="@complaint.Id" />
+                    <div class="form-row align-items-end">
+                        <div class="form-group mb-0 flex-1">
+                            <label>New Status</label>
+                            <select name="status">
+                                <option value="pending"  selected="@(complaint.Status == "pending"  ? "selected" : null)">Pending</option>
+                                <option value="progress" selected="@(complaint.Status == "progress" ? "selected" : null)">In Progress</option>
+                                <option value="resolved" selected="@(complaint.Status == "resolved" ? "selected" : null)">Resolved</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-0 flex-2">
+                            <label>Official Notes</label>
+                            <input type="text" name="adminComments" value="@complaint.AdminComments" placeholder="Add an official comment..." />
+                        </div>
+                        <div class="form-group mb-0">
+                            <button type="submit" class="btn btn-primary">Save Update</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        }
+
+        <div class="form-footer">
+            @if (role == "admin")
+            {
+                <a asp-controller="Admin" asp-action="Index">Back to Admin Dashboard</a>
+            }
+            else if (role == "auditor")
+            {
+                <a asp-controller="Auditor" asp-action="Index">Back to Auditor Dashboard</a>
+            }
+            else
+            {
+                <a asp-controller="Home" asp-action="Index">Back to Dashboard</a>
+            }
+        </div>
+    </div>
+</div>

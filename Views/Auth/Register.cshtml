@@ -1,0 +1,47 @@
+@{
+    ViewData["Title"] = "Create Account";
+    ViewBag.HideNav = true;
+}
+
+<div class="login-page">
+    <div class="login-wrapper" style="max-width: 460px;">
+        <div class="login-header">
+            <h2>Create an Account</h2>
+            <p>Register to submit and track your complaints</p>
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-error">@ViewBag.Error</div>
+        }
+
+        <form asp-controller="Auth" asp-action="Register" method="post">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input id="firstName" name="firstName" type="text" placeholder="e.g. John" required />
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input id="lastName" name="lastName" type="text" placeholder="e.g. Doe" required />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input id="email" name="email" type="email" placeholder="name@university.edu" required />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" placeholder="••••••••" required />
+            </div>
+            <div class="form-group" style="margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary w-100">Create Account</button>
+            </div>
+        </form>
+
+        <div style="text-align:center; margin-top:1.2rem; font-size:0.9rem; color: var(--muted);">
+            Already have an account?
+            <a asp-controller="Auth" asp-action="Login" style="color: var(--accent);">Sign in here</a>
+        </div>
+    </div>
+</div>
