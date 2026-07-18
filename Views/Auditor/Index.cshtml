@@ -1,6 +1,6 @@
 @using ComplainManagementSystem.Models
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Auditor Dashboard";
     var complaints = (List<Complaint>)ViewBag.Complaints;
 }
 
@@ -28,17 +28,17 @@
 }
 
 <div class="dashboard-header">
-    <h2>My Complaints</h2>
-    <a asp-controller="Home" asp-action="Create" class="btn btn-primary">+ New Complaint</a>
+    <h2>Auditor Dashboard</h2>
+    <span class="text-muted">Logged in as @ViewBag.UserName</span>
 </div>
 
 <div class="metric-grid">
     <div class="metric-card bg-total">
-        <div class="metric-title">Total Submitted</div>
+        <div class="metric-title">Total Complaints</div>
         <div class="metric-value">@ViewBag.Total</div>
     </div>
     <div class="metric-card bg-pending">
-        <div class="metric-title">Pending Review</div>
+        <div class="metric-title">Pending</div>
         <div class="metric-value">@ViewBag.Pending</div>
     </div>
     <div class="metric-card bg-progress">
@@ -53,16 +53,18 @@
 
 <div class="table-card">
     <div class="table-header">
-        <h3>My Complaint History</h3>
+        <h3>All Complaints</h3>
+        <span class="text-muted" style="font-size:0.875rem;">Click View to review and update a complaint.</span>
     </div>
     <div class="table-body">
         <table>
             <thead>
                 <tr>
-                    <th>Ticket ID</th>
+                    <th>ID</th>
+                    <th>Submitted By</th>
                     <th>Category</th>
                     <th>Subject</th>
-                    <th>Submitted Date</th>
+                    <th>Date</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -70,17 +72,13 @@
             <tbody>
                 @if (!complaints.Any())
                 {
-                    <tr>
-                        <td colspan="6" style="text-align:center; color:var(--muted); padding: 2rem;">
-                            You haven't submitted any complaints yet.
-                            <a asp-action="Create">Submit one now.</a>
-                        </td>
-                    </tr>
+                    <tr><td colspan="7" style="text-align:center; color:var(--muted);">No complaints yet.</td></tr>
                 }
                 @foreach (var c in complaints)
                 {
                     <tr>
                         <td>#CMP-@c.Id</td>
+                        <td>@c.User?.FirstName @c.User?.LastName</td>
                         <td>@GetCategory(c.CategoryId)</td>
                         <td>@c.Subject</td>
                         <td>@c.SubmittedDate.ToString("MMM dd, yyyy")</td>

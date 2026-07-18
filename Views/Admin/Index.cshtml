@@ -1,0 +1,137 @@
+@using ComplainManagementSystem.Models
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    var complaints = (List<Complaint>)ViewBag.Complaints;
+    var users      = (List<User>)ViewBag.Users;
+}
+
+@functions {
+    string GetCategory(int id) => id switch {
+        1 => "Academic Affairs",
+        2 => "Lab & IT Facilities",
+        3 => "Hostel & Housing",
+        4 => "Transport & Parking",
+        5 => "Cafeteria & Food Services",
+        _ => "Unknown"
+    };
+    string GetBadgeClass(string status) => status switch {
+        "pending"  => "badge badge-pending",
+        "progress" => "badge badge-progress",
+        "resolved" => "badge badge-resolved",
+        _          => "badge"
+    };
+    string GetStatusLabel(string status) => status switch {
+        "pending"  => "Pending",
+        "progress" => "In Progress",
+        "resolved" => "Resolved",
+        _          => status
+    };
+}
+
+<div class="dashboard-header">
+    <h2>Admin Dashboard</h2>
+    <span class="text-muted">Logged in as @ViewBag.UserName</span>
+</div>
+
+<div class="metric-grid">
+    <div class="metric-card bg-total">
+        <div class="metric-title">Total Complaints</div>
+        <div class="metric-value">@ViewBag.Total</div>
+    </div>
+    <div class="metric-card bg-pending">
+        <div class="metric-title">Pending</div>
+        <div class="metric-value">@ViewBag.Pending</div>
+    </div>
+    <div class="metric-card bg-progress">
+        <div class="metric-title">In Progress</div>
+        <div class="metric-value">@ViewBag.InProgress</div>
+    </div>
+    <div class="metric-card bg-resolved">
+        <div class="metric-title">Resolved</div>
+        <div class="metric-value">@ViewBag.Resolved</div>
+    </div>
+</div>
+
+<!-- All Complaints -->
+<div class="table-card">
+    <div class="table-header">
+        <h3>All Complaints</h3>
+    </div>
+    <div class="table-body">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Submitted By</th>
+                    <th>Category</th>
+                    <th>Subject</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!complaints.Any())
+                {
+                    <tr><td colspan="7" style="text-align:center; color:var(--muted);">No complaints yet.</td></tr>
+                }
+                @foreach (var c in complaints)
+                {
+                    <tr>
+                        <td>#CMP-@c.Id</td>
+                        <td>@c.User?.FirstName @c.User?.LastName</td>
+                        <td>@GetCategory(c.CategoryId)</td>
+                        <td>@c.Subject</td>
+                        <td>@c.SubmittedDate.ToString("MMM dd, yyyy")</td>
+                        <td><span class="@GetBadgeClass(c.Status)">@GetStatusLabel(c.Status)</span></td>
+                        <td><a asp-controller="Home" asp-action="Details" asp-route-id="@c.Id" class="btn btn-secondary">View</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- User Management -->
+<div class="table-card" style="margin-top: 2rem;">
+    <div class="table-header">
+        <h3>User Management</h3>
+    </div>
+    <div class="table-body">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Current Role</th>
+                    <th>Change Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!users.Any())
+                {
+                    <tr><td colspan="4" style="text-align:center; color:var(--muted);">No users found.</td></tr>
+                }
+                @foreach (var u in users)
+                {
+                    <tr>
+                        <td>@u.FirstName @u.LastName</td>
+                        <td>@u.Email</td>
+                        <td><span class="badge badge-pending">@char.ToUpper(u.Role[0])@u.Role.Substring(1)</span></td>
+                        <td>
+                            <form asp-controller="Admin" asp-action="ChangeRole" method="post" style="display:flex; gap:0.5rem; align-items:center;">
+                                <input type="hidden" name="userId" value="@u.Id" />
+                                <select name="role" style="padding:0.4rem 0.6rem; font-size:0.85rem;">
+                                    <option value="user"    selected="@(u.Role == "user"    ? "selected" : null)">User</option>
+                                    <option value="auditor" selected="@(u.Role == "auditor" ? "selected" : null)">Auditor</option>
+                                    <option value="admin"   selected="@(u.Role == "admin"   ? "selected" : null)">Admin</option>
+                                </select>
+                                <button type="submit" class="btn btn-secondary btn-sm">Save</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
