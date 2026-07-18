@@ -13,10 +13,8 @@ namespace ComplainManagementSystem.Controllers
             _db = db;
         }
 
-        // Helper: is the current session an auditor?
         private bool IsAuditor() => HttpContext.Session.GetString("UserRole") == "auditor";
 
-        // GET: /Auditor/Index
         public IActionResult Index()
         {
             if (!IsAuditor()) return RedirectToAction("Login", "Auth");

@@ -17,10 +17,10 @@ namespace ComplainManagementSystem.Models
         public string Description { get; set; }
 
         [Required]
-        public int CategoryId { get; set; } // 1: Academic, 2: Lab & IT, 3: Hostel, 4: Transport, 5: Cafeteria
+        public int CategoryId { get; set; }
 
         [Required]
-        public string Status { get; set; } = "pending"; // "pending", "progress", "resolved"
+        public string Status { get; set; } = "pending";
 
         public string? AdminComments { get; set; }
 

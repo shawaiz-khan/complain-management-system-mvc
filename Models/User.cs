@@ -24,7 +24,7 @@ namespace ComplainManagementSystem.Models
         public string PasswordHash { get; set; }
 
         [Required]
-        public string Role { get; set; } = "user"; // "user", "auditor", "admin"
+        public string Role { get; set; } = "user";
         
         public ICollection<Complaint> Complaints { get; set; }
     }

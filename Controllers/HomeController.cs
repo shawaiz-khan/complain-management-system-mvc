@@ -15,10 +15,8 @@ namespace ComplainManagementSystem.Controllers
             _db = db;
         }
 
-        // Helper: is any user logged in?
         private bool IsLoggedIn() => HttpContext.Session.GetString("UserId") != null;
 
-        // GET: /Home/Index — User dashboard (own complaints only)
         public IActionResult Index()
         {
             if (!IsLoggedIn()) return RedirectToAction("Login", "Auth");
@@ -39,7 +37,6 @@ namespace ComplainManagementSystem.Controllers
             return View();
         }
 
-        // GET: /Home/Create
         public IActionResult Create()
         {
             if (!IsLoggedIn()) return RedirectToAction("Login", "Auth");
@@ -48,7 +45,6 @@ namespace ComplainManagementSystem.Controllers
             return View();
         }
 
-        // POST: /Home/Create — save a new complaint to the DB
         [HttpPost]
         public IActionResult Create(string subject, string description, int categoryId)
         {
@@ -71,7 +67,6 @@ namespace ComplainManagementSystem.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: /Home/Details/{id}
         public IActionResult Details(int id)
         {
             if (!IsLoggedIn()) return RedirectToAction("Login", "Auth");
@@ -82,7 +77,6 @@ namespace ComplainManagementSystem.Controllers
 
             if (complaint == null) return NotFound();
 
-            // Regular users can only see their own complaints
             if (role == "user" && complaint.UserId != userId)
                 return RedirectToAction("Index");
 
@@ -92,7 +86,6 @@ namespace ComplainManagementSystem.Controllers
             return View();
         }
 
-        // POST: /Home/UpdateStatus — admin/auditor update complaint status and notes
         [HttpPost]
         public IActionResult UpdateStatus(int id, string status, string adminComments)
         {
@@ -108,7 +101,6 @@ namespace ComplainManagementSystem.Controllers
             complaint.AdminComments = adminComments;
             _db.SaveChanges();
 
-            // Redirect back to the right dashboard
             if (role == "admin")   return RedirectToAction("Index", "Admin");
             if (role == "auditor") return RedirectToAction("Index", "Auditor");
             return RedirectToAction("Index");

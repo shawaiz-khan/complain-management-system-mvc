@@ -13,10 +13,8 @@ namespace ComplainManagementSystem.Controllers
             _db = db;
         }
 
-        // Helper: is the current session an admin?
         private bool IsAdmin() => HttpContext.Session.GetString("UserRole") == "admin";
 
-        // GET: /Admin/Index
         public IActionResult Index()
         {
             if (!IsAdmin()) return RedirectToAction("Login", "Auth");
@@ -39,7 +37,6 @@ namespace ComplainManagementSystem.Controllers
             return View();
         }
 
-        // POST: /Admin/ChangeRole — change a user's role
         [HttpPost]
         public IActionResult ChangeRole(int userId, string role)
         {
